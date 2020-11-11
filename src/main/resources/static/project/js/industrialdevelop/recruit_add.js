@@ -72,15 +72,7 @@
             });
 
             $("#cancelBtn").click(function () {
-                $("#main_body").html("");
-                orange.loadPage({url: purl, target: 'main_body', selector: '#fir_body', success: function(data){
-
-                        if(data == null||data == ""){
-                            return alert(url + "加载失败")
-                        }
-
-                        $("#main_body").html(data);
-                    }})
+                orange.redirect(purl)
             });
 
             function generateParam(){
@@ -100,9 +92,13 @@
 
             $("#saveBtn").unbind().on('click',function () {
                 var param = generateParam();
+                param.status = "——";
 
                 ajaxUtil.myAjax(null,url,param,function (data) {
                     if(ajaxUtil.success(data)){
+                        orange.redirect(purl)
+                    }else {
+                        alert(data.msg)
                     }
                 },true,"123",type);
                 return false;
@@ -110,10 +106,12 @@
 
             $("#submitBtn").unbind().on('click',function () {
                 var param = generateParam();
-
+                param.status = "——";
                 ajaxUtil.myAjax(null,url,param,function (data) {
                     if(ajaxUtil.success(data)){
-
+                        orange.redirect(purl)
+                    }else {
+                        alert(data.msg)
                     }
                 },true,"123",type);
                 return false;
@@ -131,7 +129,7 @@
                     $("#div1 .w-e-text").html(tempdata.postDuty);
                     $("#div2 .w-e-text").html(tempdata.postDescr)
                 }
-            }());
+            })();
 
 
             function isUpdate() {

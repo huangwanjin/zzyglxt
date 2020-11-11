@@ -2,7 +2,9 @@
     require(['jquery','ajaxUtil','wangEditor'],
         function (jquery,ajaxUtil, wangEditor) {
 
-            var url = "/industrialdevelop/cooperation";
+            var url = "/industrialdevelop/coorecord";
+
+            var pathUrl = "/industrialdevelop/cooperation"
 
             var type = isUpdate() ? "put":"post";
 
@@ -51,15 +53,7 @@
             });
 
             $("#cancelBtn").click(function () {
-                $("#main_body").html("");
-                orange.loadPage({url: url, target: 'main_body', selector: '#fir_body', success: function(data){
-
-                        if(data == null||data == ""){
-                            return alert( url+'加载失败');
-                        }
-
-                        $("#main_body").html(data);
-                    }})
+                orange.redirect(pathUrl)
             });
 
             function generateParam(){
@@ -73,11 +67,21 @@
                 return param;
             }
 
+            $("#upload_file").change(function () {
+                var file = $("#upload_file")[0].files[0];
+                var file_span = $("#filename_span");
+                file_span.text(file.name)
+            });
+
             $("#saveBtn").unbind().on('click',function () {
                 var param = generateParam();
+                param.status = "——";
 
                 ajaxUtil.myAjax(null,url,param,function (data) {
                     if(ajaxUtil.success(data)){
+                        orange.redirect(pathUrl)
+                    }else {
+                        alert(data.msg)
                     }
                 },true,"123",type);
                 return false;
@@ -85,9 +89,12 @@
 
             $("#submitBtn").unbind().on('click',function () {
                 var param = generateParam();
-
+                param.status = "——";
                 ajaxUtil.myAjax(null,url,param,function (data) {
                     if(ajaxUtil.success(data)){
+                        orange.redirect(pathUrl)
+                    }else {
+                        alert(data.msg)
                     }
                 },true,"123",type);
                 return false;
@@ -102,7 +109,7 @@
                     $("#phone").val(tempdata.phone);
                     $(".w-e-text").html(tempdata.projectIntroduce);
                 }
-            }());
+            })();
 
 
             function isUpdate() {
