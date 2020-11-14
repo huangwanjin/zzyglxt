@@ -62,21 +62,26 @@
 
             function generateParam(){
                 var param = {};
-                param.serviceProject = $("#serviceProject").val();
+                param.name = $("#name").val();
                 param.projectCost = $("#projectCost").val();
                 param.contacts = $("#contacts").val();
                 param.phone = $("#phone").val();
                 param.addressPro = $("#addressPro").val();
                 param.addressCity = $("#addressCity").val();
                 param.addressCountry = $("#addressCountry").val();
-                param.projectIntroduce = $(".w-e-text").html();
+                param.address = $("#address").val()
+                param.intruduce = $(".w-e-text").html();
                 param.orgCode = "未定义";
+                param.itemcode = itemcode;
                 return param;
             }
 
             $("#saveBtn").unbind('click').on('click',function () {
                 var param = generateParam();
                 param.status = "——";
+                if (uploadImg.isUpdate()){
+                    ajaxUtil.fileAjax(itemcode,uploadImg.getFiles()[0],"undefined","undefined")
+                }
 
                 ajaxUtil.myAjax(null,url,param,function (data) {
                     if(ajaxUtil.success(data)){
@@ -101,23 +106,30 @@
                 return false;
             });
 
-            (function init() {
+            var init = function () {
                 if (isUpdate()){
                     var tempdata = JSON.parse(localStorage.getItem("rowData"));
-                    $("#serviceProject").val(tempdata.serviceProject);
+                    $("#name").val(tempdata.name);
                     $("#projectCost").val(tempdata.projectCost);
                     $("#contacts").val(tempdata.contacts);
                     $("#phone").val(tempdata.phone);
-                    $("#addressPro").val(tempdata.addressPro);
-                    $("#addressCity").val(tempdata.addressCity);
-                    $("#addressCountry").val(tempdata.addressCity);
+                    $("#distpicker").distpicker({
+                        province: tempdata.addressPro,
+                        city: tempdata.addressCity,
+                        district: tempdata.addressCountry
+                    });
+                    $("#address").val(tempdata.address);
+                    $("#intruduce").val(tempdata.intruduce)
                     $(".w-e-text").html(tempdata.projectIntroduce);
-                    $(".upload-content").attr('data-code', tempdata.itemcode);
                     itemcode = tempdata.itemcode;
                 }else {
-                    $(".upload-content").attr('data-code', itemcode);
+                    $("#distpicker").distpicker();
                 }
-            })();
+                init = function () {
+
+                }
+            };
+            init();
 
 
             function isUpdate() {

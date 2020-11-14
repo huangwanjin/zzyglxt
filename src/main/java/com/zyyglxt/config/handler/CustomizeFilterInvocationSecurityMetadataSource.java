@@ -3,6 +3,7 @@ package com.zyyglxt.config.handler;
 import com.zyyglxt.dataobject.ResourcesDO;
 import com.zyyglxt.service.ResourcesService;
 import com.zyyglxt.util.UrlUtil;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
@@ -12,6 +13,7 @@ import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,14 +23,39 @@ import java.util.List;
 @Component
 public class CustomizeFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
     AntPathMatcher antPathMatcher = new AntPathMatcher();
+
     @Autowired
     ResourcesService resService;
 
+    @SneakyThrows
     @Override
     public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
         //获取请求地址
         String requestUrl = ((FilterInvocation) o).getRequestUrl();
-        requestUrl = UrlUtil.getUrl(requestUrl);
+        if (requestUrl.contains("/component")
+                |requestUrl.contains("/project")
+                |requestUrl.contains("/main")
+                |requestUrl.contains("/css")
+                |requestUrl.contains("/CSS")
+                |requestUrl.contains("/system")
+                |requestUrl.contains("/images")
+                |requestUrl.contains("/fonts")
+                |requestUrl.contains("/api")
+                |requestUrl.contains("/utils")
+                |requestUrl.contains("/userLogin")
+                |requestUrl.contains("/CSS")){
+            return null;
+        }
+        int index = requestUrl.indexOf("?");
+        if (index != -1) {
+            requestUrl = requestUrl.substring(0, index);
+        }
+        if (requestUrl.contains("/industrialdevelop")){
+            String method = ((FilterInvocation) o).getHttpRequest().getMethod();
+            requestUrl = UrlUtil.getUrl(requestUrl, method);
+        }else {
+            requestUrl = UrlUtil.getUrl(requestUrl);
+        }
         //查询具体某个接口的权限
         List<ResourcesDO> permissionList = resService.selectListByPath(requestUrl);
         if (permissionList == null || permissionList.size() == 0) {
