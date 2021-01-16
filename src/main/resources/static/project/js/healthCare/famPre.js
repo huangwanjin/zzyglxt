@@ -2,16 +2,17 @@
     require(['jquery', 'ajaxUtil','bootstrapTableUtil','objectUtil','alertUtil','modalUtil','selectUtil','stringUtil','dictUtil'],
         function (jquery,ajaxUtil,bootstrapTableUtil,objectUtil,alertUtil,modalUtil,selectUtil,stringUtil,dictUtil) {
 
-            var url = "selectallfampredo?status=已下架&status=展示中&status=待审核&status=--";
+            var url = "selectallfampredo";
+            var webStatus = dictUtil.getDictByCode(dictUtil.DICT_LIST.webStatus);
             //角色加载工具
-            url = selectUtil.getRoleTable(sessionStorage.getItem("rolename"),url);
+            url = selectUtil.getRoleTable(sessionStorage.getItem("rolename"),url,"status",webStatus);
 
             var aParam = {
 
             };
             //操作
             function operation(value, row, index){
-                return selectUtil.getRoleOperate(value,row,index,sessionStorage.getItem("rolename"),row.status)
+                return selectUtil.getRoleOperate(value,row,index,sessionStorage.getItem("rolename"),row.status,webStatus)
             }
             //修改事件
             window.orgEvents = {
@@ -53,12 +54,12 @@
                         modalConfirmFun:function () {
                             var isSuccess = false;
                             var submitStatus = {
-                                "status": selectUtil.getStatus(sessionStorage.getItem("rolename"))
+                                "status": selectUtil.getStatus(sessionStorage.getItem("rolename"),webStatus)
                             };
                             ajaxUtil.myAjax(null,"changestatustofampre/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
-                                    if(data.code == 88888){
-                                        if(selectUtil.getStatus(sessionStorage.getItem("rolename")) == "处长已审核"){
+                                    if(data.code == ajaxUtil.successCode){
+                                        if(sessionStorage.getItem("rolename") == "文化宣传处长"){
                                             alertUtil.info("审核已通过，已发送给综合处处长做最后审核！");
                                         }else{
                                             alertUtil.info("审核已通过，已上架！");
@@ -85,8 +86,13 @@
                         modalConfirmFun:function () {
                             var isSuccess = false;
                             var submitStatus = {
-                                "status": "已下架"
+                                "status": ""
                             };
+                            if(sessionStorage.getItem("rolename") == "文化宣传处长" || sessionStorage.getItem("rolename") == "政务资源处长"){
+                                submitStatus.status = webStatus[3].id;
+                            }else{
+                                submitStatus.status = webStatus[4].id;
+                            }
                             ajaxUtil.myAjax(null,"changestatustofampre/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
                                     if(data.code == 88888){
@@ -112,7 +118,7 @@
                         modalConfirmFun:function () {
                             var isSuccess = false;
                             var submitStatus = {
-                                "status": "已下架"
+                                "status": webStatus[6].id
                             };
                             ajaxUtil.myAjax(null,"changestatustofampre/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
@@ -143,10 +149,11 @@
                     $("#name").val(row.name);
                     $("#source").val(row.source);
                     $("#prescription").val(row.prescription);
-                    $("#status").val(row.status);
+                    $("#status").val(webStatus[row.status].text);
+                    $("#type").val(row.type);
                     $("#creater").val(row.creater);
-                   /* $("#itemCreateAt").val(row.itemcreateat);*/
-                    $("#content").val(row.content);
+                    $("#itemCreateAt").val(row.itemcreateat);
+                    $("#content").html(row.content);
                     myFamPreModal.show();
                 },
                 'click .submit' : function (e, value, row, index) {
@@ -157,7 +164,7 @@
                         modalConfirmFun:function () {
                             var isSuccess = false;
                             var submitStatus = {
-                                "status": selectUtil.getStatus(sessionStorage.getItem("rolename"))
+                                "status": selectUtil.getStatus(sessionStorage.getItem("rolename"),webStatus)
                             };
                             ajaxUtil.myAjax(null,"changestatustofampre/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
                                 if(ajaxUtil.success(data)){
@@ -176,9 +183,34 @@
                     var mySubmitModal = modalUtil.init(mySubmitFamPreModalData);
                     mySubmitModal.show();
                 },
+                'click .no-submit' : function (e, value, row, index) {
+                    var myNoSubmitFamPreModalData ={
+                        modalBodyID :"myNoSubmitModal",
+                        modalTitle : "取消提交",
+                        modalClass : "modal-lg",
+                        modalConfirmFun:function () {
+                            var isSuccess = false;
+                            var submitStatus = {
+                                "status": webStatus[0].id
+                            };
+                            ajaxUtil.myAjax(null,"changestatustofampre/"+row.itemid+"/"+row.itemcode,submitStatus,function (data) {
+                                if(ajaxUtil.success(data)){
+                                    if(data.code == 88888){
+                                        alertUtil.info("已提交");
+                                        isSuccess = true;
+                                        refreshTable();
+                                    }else{
+                                        alertUtil.error(data.msg);
+                                    }
+                                }
+                            },false);
+                            return isSuccess;
+                        }
+                    };
+                    var mySubmitModal = modalUtil.init(myNoSubmitFamPreModalData);
+                    mySubmitModal.show();
+                },
             };
-
-
 
             $("#btn_addTask").unbind().on('click',function () {
                 var url = "/healthCare/insertfamPre";
@@ -193,8 +225,8 @@
                 {field: 'name', title: '方名'},
                 {field: 'source', title: '出处'},
                 {field: 'prescription', title: '处方'},
-                {field:'content',title:'制法及用法'},
-                {field: 'status', title: '状态'},
+                {field: 'content',title:'制法及用法'},
+                {field: 'type', title: '剂型',width: '70px'},
                 {field: 'action',  title: '操作',formatter: operation,events:orgEvents}
             ];
 
@@ -210,12 +242,10 @@
             var oBt=document.getElementById("taskNameSearch");
             var btnSearch=document.getElementById("btnSearch")
             btnSearch.onclick=function(){
-                console.log(oTab.tHead.rows[0].childNodes[5].innerText);
                 for(var i=0;i<oTab.tBodies[0].rows.length;i++)
                 {
                     var str1=oTab.tBodies[0].rows[i].innerText.toLowerCase();
                     var str2=oBt.value.toLowerCase();
-                    console.log(str2);
                     if (str2==""||str2=="请输入"){
                         refreshTable();
                     }
@@ -248,5 +278,6 @@
             }
 
             bootstrapTableUtil.globalSearch("table",url,aParam, aCol);
+
         })
 })();

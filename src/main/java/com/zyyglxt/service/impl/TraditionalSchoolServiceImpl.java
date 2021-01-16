@@ -3,11 +3,13 @@ package com.zyyglxt.service.impl;
 import com.zyyglxt.dao.CulturalResourcesDOMapper;
 import com.zyyglxt.dataobject.CulturalResourcesDO;
 import com.zyyglxt.dataobject.CulturalResourcesDOKey;
+import com.zyyglxt.dto.CulturalResourcesDto;
 import com.zyyglxt.error.BusinessException;
 import com.zyyglxt.error.EmBusinessError;
 import com.zyyglxt.util.DateUtils;
 import com.zyyglxt.util.UUIDUtils;
 import com.zyyglxt.service.ITraditionalSchoolService;
+import com.zyyglxt.util.UsernameUtil;
 import com.zyyglxt.validator.ValidatorImpl;
 import com.zyyglxt.validator.ValidatorResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,18 +35,17 @@ public class TraditionalSchoolServiceImpl implements ITraditionalSchoolService {
     @Autowired
     private ValidatorImpl validator;
 
+    @Autowired
+    private UsernameUtil usernameUtil;
+
     @Override
     public CulturalResourcesDO getTraditionalSchool(CulturalResourcesDOKey key) {
         return culturalResourcesDOMapper.selectByPrimaryKey(key,"中医流派");
     }
 
     @Override
-    public List<CulturalResourcesDO> getTraditionalSchoolList(List<String> chineseCulturalStatus) {
-        List<CulturalResourcesDO> culturalResourcesDOList = new ArrayList<>();
-        for (String culturalStatus : chineseCulturalStatus) {
-            culturalResourcesDOList.addAll(culturalResourcesDOMapper.selectCulturalResourcesList("中医流派",culturalStatus));
-        }
-        return culturalResourcesDOList;
+    public List<CulturalResourcesDto> getTraditionalSchoolList(String chineseCulturalStatus) {
+        return culturalResourcesDOMapper.selectCulturalResourcesList("中医流派",chineseCulturalStatus);
     }
 
     @Override
@@ -54,11 +55,10 @@ public class TraditionalSchoolServiceImpl implements ITraditionalSchoolService {
         if(result.isHasErrors()){
             throw new BusinessException(result.getErrMsg(), EmBusinessError.PARAMETER_VALIDATION_ERROR);
         }
-        record.setCreater("");
+        record.setCreater(usernameUtil.getOperateUser());
         record.setItemcreateat(DateUtils.getDate());
-        record.setUpdater("");
+        record.setUpdater(usernameUtil.getOperateUser());
         record.setChineseCulturalType("中医流派");
-        record.setChineseCulturalStatus("--");
         //如果前台没有插入图片或者附件，就自己生成uuid
         if(record.getItemcode() == null){
             record.setItemcode(UUIDUtils.getUUID());
@@ -80,7 +80,7 @@ public class TraditionalSchoolServiceImpl implements ITraditionalSchoolService {
         if(result.isHasErrors()){
             throw new BusinessException(result.getErrMsg(), EmBusinessError.PARAMETER_VALIDATION_ERROR);
         }
-        record.setUpdater("");
+        record.setUpdater(usernameUtil.getOperateUser());
         record.setItemupdateat(new Date());
         return culturalResourcesDOMapper.updateByPrimaryKeySelective(record);
     }

@@ -14,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,36 +35,13 @@ public class DataAnnouncementController {
     private IFileService fileService;
 
     /**
-     * 查看一条通知公告
-     * @param itemID
-     * @param itemCode
-     * @return
-     */
-    @RequestMapping(value = "/selectByPrimaryKey/{itemID}/{itemCode}", method = RequestMethod.GET)
-    @LogAnnotation(appCode ="",logTitle ="查看一条通知公告",logLevel ="1",creater ="",updater = "")
-    public ResponseData selectByPrimaryKey(@PathVariable("itemID") Integer itemID, @PathVariable("itemCode")String itemCode){
-        DataDOKey dataDOKey = new DataDOKey();
-        dataDOKey.setItemid(itemID);
-        dataDOKey.setItemcode(itemCode);
-        DataDO data = dataAnnouncementService.selectAnnouncement(dataDOKey);
-        return new ResponseData(EmBusinessError.success, data);
-    }
-
-    private DataDto convertFromDOToDTO(DataDO dataDo, String filePath) {
-        DataDto dataDto = new DataDto();
-        BeanUtils.copyProperties(dataDo,dataDto);
-        dataDto.setFilePath(filePath);
-        return dataDto;
-    }
-
-    /**
      * 查看通知公告的所有数据
      * @return
      */
     @RequestMapping(value = "/selectAll", method = RequestMethod.GET)
     @LogAnnotation(appCode ="",logTitle ="查看所有通知公告",logLevel ="1",creater ="",updater = "")
-    public ResponseData selectAnnouncementList(){
-        List<DataDO> dataDOList = dataAnnouncementService.selectAnnouncementList();
+    public ResponseData selectAnnouncementList(@RequestParam(value = "dataStatus")List dataStatus){
+        List<DataDO> dataDOList = dataAnnouncementService.selectAnnouncementList(dataStatus);
         return new ResponseData(EmBusinessError.success,DoToDto(dataDOList));
     }
 
@@ -107,29 +85,17 @@ public class DataAnnouncementController {
     }
 
     //修改展示状态
-    @RequestMapping(value = "changeStatus/{itemID}/{itemCode}", method = RequestMethod.PUT)
+    @RequestMapping(value = "changeAnnStatus/{itemID}/{itemCode}", method = RequestMethod.PUT)
     @ResponseBody
     @LogAnnotation(appCode ="",logTitle ="修改展示状态",logLevel ="2",creater ="",updater = "")
-    public ResponseData changeStatus(@RequestParam("dataStatus") String dataStatus, @PathVariable("itemID") Integer itemID, @PathVariable("itemCode")String itemCode){
+    public ResponseData changeStatus(@RequestParam(value = "dataDelayedRelease",required = false) String dataDelayedRelease, @RequestParam("dataStatus") String dataStatus, @PathVariable("itemID") Integer itemID, @PathVariable("itemCode")String itemCode){
         DataDOKey dataDOKey = new DataDOKey();
         dataDOKey.setItemid(itemID);
         dataDOKey.setItemcode(itemCode);
-        dataAnnouncementService.changeStatus(dataDOKey,dataStatus);
+        dataAnnouncementService.changeStatus(dataDOKey,dataDelayedRelease,dataStatus);
         return new ResponseData(EmBusinessError.success);
     }
 
-    /**
-     * 关键字搜索
-     * @param keyWord
-     * @return
-     */
-    @GetMapping("/searchDataDO/{keyWord}")
-    @ResponseBody
-    @LogAnnotation(appCode ="",logTitle ="关键字搜索",logLevel ="1",creater ="",updater = "")
-    public ResponseData searchDataDO(@PathVariable("keyWord") String keyWord) {
-        List<DataDO> dataDOList = dataAnnouncementService.searchDataDO(keyWord);
-        return new ResponseData(EmBusinessError.success,dataDOList);
-    }
 
     private List<DataDto> DoToDto(List<DataDO> DOList){
         List<DataDto> DtoList = new ArrayList<>();

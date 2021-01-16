@@ -25,19 +25,28 @@
     <result column="itemCreateAt" jdbcType="TIMESTAMP" property="itemcreateat" />
     <result column="UPDATER" jdbcType="VARCHAR" property="updater" />
     <result column="itemUpdateAt" jdbcType="TIMESTAMP" property="itemupdateat" />
+    <result column="ONLINE_ADDRESS" jdbcType="VARCHAR" property="onlineAddress" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    itemID, itemCode, `NAME`, AREA_COVERD, SPECIAL_SERVICE, PROJECT_NAME, CONTACTS, PHONE, 
-    ADDRESS_PRO, ADDRESS_CITY, ADDRESS_COUNTRY, ADDRESS, INTRUDUCE, `STATUS`, REASON, 
+    itemID, itemCode, `NAME`, AREA_COVERD, SPECIAL_SERVICE, PROJECT_NAME, CONTACTS, PHONE,
+    ADDRESS_PRO, ADDRESS_CITY, ADDRESS_COUNTRY, ADDRESS,ONLINE_ADDRESS, INTRUDUCE, `STATUS`, REASON,
     ORG_CODE, `TYPE`, CREATER, itemCreateAt, UPDATER, itemUpdateAt
   </sql>
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
     <!--@mbg.generated-->
-    select 
+    select
     <include refid="Base_Column_List" />
     from tb_industrial_develop_tec_ser_org
     where itemCode = #{itemcode,jdbcType=CHAR}
+    order by itemUpdateAt desc
+  </select>
+  <select id="selectByOrgcode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tb_industrial_develop_tec_ser_org
+    where ORG_CODE = #{orgCode,jdbcType=CHAR}
+    order by itemUpdateAt desc
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
     <!--@mbg.generated-->
@@ -46,19 +55,19 @@
   </delete>
   <insert id="insert" keyColumn="itemID" keyProperty="itemid" parameterType="com.zyyglxt.dataobject.IndustrialDevelopTecSerOrg" useGeneratedKeys="true">
     <!--@mbg.generated-->
-    insert into tb_industrial_develop_tec_ser_org (itemCode, `NAME`, AREA_COVERD, 
-      SPECIAL_SERVICE, PROJECT_NAME, CONTACTS, 
-      PHONE, ADDRESS_PRO, ADDRESS_CITY, 
-      ADDRESS_COUNTRY, ADDRESS, INTRUDUCE, 
-      `STATUS`, REASON, ORG_CODE, 
-      `TYPE`, CREATER, itemCreateAt, 
+    insert into tb_industrial_develop_tec_ser_org (itemCode, `NAME`, AREA_COVERD,
+      SPECIAL_SERVICE, PROJECT_NAME, CONTACTS,
+      PHONE, ADDRESS_PRO, ADDRESS_CITY,
+      ADDRESS_COUNTRY, ADDRESS, INTRUDUCE,
+      `STATUS`, REASON, ORG_CODE,
+      `TYPE`, CREATER, itemCreateAt,
       UPDATER, itemUpdateAt)
-    values (#{itemcode,jdbcType=CHAR}, #{name,jdbcType=VARCHAR}, #{areaCoverd,jdbcType=VARCHAR}, 
-      #{specialService,jdbcType=VARCHAR}, #{projectName,jdbcType=VARCHAR}, #{contacts,jdbcType=VARCHAR}, 
-      #{phone,jdbcType=VARCHAR}, #{addressPro,jdbcType=VARCHAR}, #{addressCity,jdbcType=VARCHAR}, 
-      #{addressCountry,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{intruduce,jdbcType=LONGVARCHAR}, 
-      #{status,jdbcType=VARCHAR}, #{reason,jdbcType=VARCHAR}, #{orgCode,jdbcType=CHAR}, 
-      #{type,jdbcType=VARCHAR}, #{creater,jdbcType=VARCHAR}, #{itemcreateat,jdbcType=TIMESTAMP}, 
+    values (#{itemcode,jdbcType=CHAR}, #{name,jdbcType=VARCHAR}, #{areaCoverd,jdbcType=VARCHAR},
+      #{specialService,jdbcType=VARCHAR}, #{projectName,jdbcType=VARCHAR}, #{contacts,jdbcType=VARCHAR},
+      #{phone,jdbcType=VARCHAR}, #{addressPro,jdbcType=VARCHAR}, #{addressCity,jdbcType=VARCHAR},
+      #{addressCountry,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{intruduce,jdbcType=LONGVARCHAR},
+      #{status,jdbcType=VARCHAR}, #{reason,jdbcType=VARCHAR}, #{orgCode,jdbcType=CHAR},
+      #{type,jdbcType=VARCHAR}, #{creater,jdbcType=VARCHAR}, #{itemcreateat,jdbcType=TIMESTAMP},
       #{updater,jdbcType=VARCHAR}, #{itemupdateat,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="itemID" keyProperty="itemid" parameterType="com.zyyglxt.dataobject.IndustrialDevelopTecSerOrg" useGeneratedKeys="true">
@@ -125,6 +134,9 @@
       <if test="itemupdateat != null">
         itemUpdateAt,
       </if>
+      <if test="onlineAddress != null">
+        ONLINE_ADDRESS,
+        </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="itemcode != null">
@@ -187,6 +199,9 @@
       <if test="itemupdateat != null">
         #{itemupdateat,jdbcType=TIMESTAMP},
       </if>
+      <if test="onlineAddress != null">
+      #{onlineAddress,jdbcType=VARCHAR}
+        </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.zyyglxt.dataobject.IndustrialDevelopTecSerOrg">
@@ -250,6 +265,9 @@
       <if test="itemupdateat != null">
         itemUpdateAt = #{itemupdateat,jdbcType=TIMESTAMP},
       </if>
+      <if test="onlineAddress != null">
+      ONLINE_ADDRESS = #{onlineAddress,jdbcType=VARCHAR}
+</if>
     </set>
     where itemCode = #{itemcode,jdbcType=CHAR}
   </update>
@@ -277,7 +295,16 @@
       itemUpdateAt = #{itemupdateat,jdbcType=TIMESTAMP}
     where itemCode = #{itemcode,jdbcType=CHAR}
   </update>
-    <select id="selectAll" resultMap="BaseResultMap">
+  <select id="selectAll" resultMap="BaseResultMap">
       select * from tb_industrial_develop_tec_ser_org
-    </select>
+      order by itemUpdateAt desc
+  </select>
+  <select id="selectByOrgNameAndCode" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tb_industrial_develop_tec_ser_org
+    where NAME = #{orgName,jdbcType=VARCHAR}
+    and ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+    order by itemUpdateAt desc
+  </select>
 </mapper>

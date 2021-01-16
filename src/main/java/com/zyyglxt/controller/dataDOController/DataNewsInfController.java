@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,27 +33,16 @@ public class DataNewsInfController {
     @Resource
     private IFileService fileService;
 
-    /**
-     * 查看一条记录
-     * @param itemID
-     * @param itemCode
-     * @return
-     */
-    @RequestMapping(value = "/selectByPrimaryKey/{itemID}/{itemCode}", method = RequestMethod.GET)
+    /*查看一条记录*/
+    /*@RequestMapping(value = "/selectByPrimaryKey/{itemID}/{itemCode}", method = RequestMethod.GET)
     public ResponseData selectByPrimaryKey(@PathVariable("itemID") Integer itemID, @PathVariable("itemCode")String itemCode){
         DataDOKey dataDOKey = new DataDOKey();
         dataDOKey.setItemid(itemID);
         dataDOKey.setItemcode(itemCode);
         DataDO data = dataDOService.selectNewsInf(dataDOKey);
         return new ResponseData(EmBusinessError.success, data);
-    }
+    }*/
 
-    private DataDto convertFromDOToDTO(DataDO dataDo,String filePath) {
-        DataDto dataDto = new DataDto();
-        BeanUtils.copyProperties(dataDo,dataDto);
-        dataDto.setFilePath(filePath);
-        return dataDto;
-    }
 
     /**
      * 查看新闻轮播图的所有数据
@@ -60,8 +50,8 @@ public class DataNewsInfController {
      */
     @RequestMapping(value = "/selectAllNewsRot", method = RequestMethod.GET)
     @LogAnnotation(appCode ="",logTitle ="查看所有新闻轮播图",logLevel ="1",creater ="",updater = "")
-    public ResponseData selectNewsRotList(){
-        List<DataDO> dataDOList = dataDOService.selectNewsRotList();
+    public ResponseData selectNewsRotList(@RequestParam(value = "dataStatus")List dataStatus){
+        List dataDOList = dataDOService.selectNewsRotList(dataStatus);
         return new ResponseData(EmBusinessError.success,DoToDto(dataDOList));
     }
 
@@ -72,8 +62,8 @@ public class DataNewsInfController {
      */
     @RequestMapping(value = "/selectAllNewsInf", method = RequestMethod.GET)
     @LogAnnotation(appCode ="",logTitle ="查看所有新闻信息",logLevel ="1",creater ="",updater = "")
-    public ResponseData selectNewsInfList(){
-        List<DataDO> dataDOList = dataDOService.selectNewsInfList();
+    public ResponseData selectNewsInfList(@RequestParam(value = "dataStatus")List dataStatus){
+        List<DataDO> dataDOList = dataDOService.selectNewsInfList(dataStatus);
         return new ResponseData(EmBusinessError.success,dataDOList);
     }
 
@@ -117,27 +107,17 @@ public class DataNewsInfController {
     }
 
     //修改展示状态
-    @RequestMapping(value = "changeStatus/{itemID}/{itemCode}", method = RequestMethod.PUT)
+    @RequestMapping(value = "changeNewsStatus/{itemID}/{itemCode}", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseData changeStatus(@RequestParam("dataStatus") String dataStatus, @PathVariable("itemID") Integer itemID, @PathVariable("itemCode")String itemCode){
+    @LogAnnotation(appCode ="",logTitle ="修改展示状态",logLevel ="2",creater ="",updater = "")
+    public ResponseData changeStatus(@RequestParam(value = "dataDelayedRelease",required = false) String dataDelayedRelease, @RequestParam("dataStatus") String dataStatus, @PathVariable("itemID") Integer itemID, @PathVariable("itemCode")String itemCode){
         DataDOKey dataDOKey = new DataDOKey();
         dataDOKey.setItemid(itemID);
         dataDOKey.setItemcode(itemCode);
-        dataDOService.changeStatus(dataDOKey,dataStatus);
+        dataDOService.changeStatus(dataDOKey,dataDelayedRelease,dataStatus);
         return new ResponseData(EmBusinessError.success);
     }
 
-    /**
-     * 关键字搜索
-     * @param keyWord
-     * @return
-     */
-    @GetMapping("/searchDataDO/{keyWord}")
-    @ResponseBody
-    public ResponseData searchDataDO(@PathVariable("keyWord") String keyWord) {
-        List<DataDO> dataDOList = dataDOService.searchDataDO(keyWord);
-        return new ResponseData(EmBusinessError.success,dataDOList);
-    }
 
     private List<DataDto> DoToDto(List<DataDO> DOList){
         List<DataDto> DtoList = new ArrayList<>();

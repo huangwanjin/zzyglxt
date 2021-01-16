@@ -4,6 +4,7 @@ import com.zyyglxt.dataobject.DataDO;
 import com.zyyglxt.dataobject.DataDOKey;
 import com.zyyglxt.error.BusinessException;
 
+import java.sql.Date;
 import java.util.List;
 
 /**
@@ -16,10 +17,10 @@ public interface IDataNewsService {
     DataDO selectNewsInf(DataDOKey key);
 
     //查询所有新闻信息
-    List<DataDO> selectNewsInfList();
+    List<DataDO> selectNewsInfList(List<String> dataStatus);
 
     //查询所有新闻轮播图
-    List<DataDO> selectNewsRotList();
+    List<DataDO> selectNewsRotList(List<String> dataStatus);
 
     //增加一个信息
     int insertNewsInf(DataDO record);
@@ -30,8 +31,6 @@ public interface IDataNewsService {
     //修改新闻信息
     int updateNewsInf(DataDO record);
 
-    int changeStatus(DataDOKey key, String dataStatus);
-
-    List<DataDO> searchDataDO(String keyWord);
+    int changeStatus(DataDOKey key, String dataDelayedRelease, String dataStatus);
 
 }

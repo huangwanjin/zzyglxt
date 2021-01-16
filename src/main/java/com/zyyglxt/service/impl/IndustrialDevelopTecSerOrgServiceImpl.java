@@ -1,11 +1,21 @@
 package com.zyyglxt.service.impl;
 
 import com.zyyglxt.dao.IndustrialDevelopTecSerOrgMapper;
+import com.zyyglxt.dao.OrganizationDOMapper;
+import com.zyyglxt.dataobject.FileDO;
 import com.zyyglxt.dataobject.IndustrialDevelopTecSerOrg;
+import com.zyyglxt.dataobject.OrganizationDO;
 import com.zyyglxt.dto.industrialDevelop.IndustrialDevelopTecSerOrgDto;
+import com.zyyglxt.error.BusinessException;
+import com.zyyglxt.error.EmBusinessError;
 import com.zyyglxt.service.IFileService;
 import com.zyyglxt.service.IndustrialDevelopTecSerOrgService;
+import com.zyyglxt.util.UsernameUtil;
+import com.zyyglxt.validator.ValidatorImpl;
+import com.zyyglxt.validator.ValidatorResult;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -22,9 +32,18 @@ public class IndustrialDevelopTecSerOrgServiceImpl implements IndustrialDevelopT
 
     @Resource
     private IndustrialDevelopTecSerOrgMapper industrialDevelopTecSerOrgMapper;
-    
+
+    @Resource
+    OrganizationDOMapper organizationDOMapper;
+
     @Resource
     private IFileService fileService;
+
+    @Resource
+    UsernameUtil usernameUtil;
+
+    @Autowired
+    ValidatorImpl validator;
 
     @Override
     public int deleteByPrimaryKey(Integer itemid,String itemcode) {
@@ -38,7 +57,22 @@ public class IndustrialDevelopTecSerOrgServiceImpl implements IndustrialDevelopT
 
     @Override
     public int insertSelective(IndustrialDevelopTecSerOrg record) {
-        return industrialDevelopTecSerOrgMapper.insertSelective(record);
+        ValidatorResult result = validator.validate(record);
+        if (result.isHasErrors()) {
+            throw new BusinessException(result.getErrMsg(), EmBusinessError.PARAMETER_VALIDATION_ERROR);
+        }
+        OrganizationDO organizationDO = organizationDOMapper.selectByOrgName(record.getName());
+        if (organizationDO == null){
+            return -1;
+        } else {
+            if (record.getAddressCity() != null){
+                OrganizationDO updated = new OrganizationDO();
+                updated.setOrgLocate(record.getAddressCity());
+                organizationDOMapper.updateByOrgCode(updated,organizationDO.getOrgCode());
+            }
+            record.setOrgCode(organizationDO.getOrgCode());
+            return industrialDevelopTecSerOrgMapper.insertSelective(record);
+        }
     }
 
     @Override
@@ -47,18 +81,39 @@ public class IndustrialDevelopTecSerOrgServiceImpl implements IndustrialDevelopT
     }
 
     @Override
+    public IndustrialDevelopTecSerOrgDto selectByOrgcode() {
+        IndustrialDevelopTecSerOrgDto industrialDevelopTecSerOrgDto = new IndustrialDevelopTecSerOrgDto();
+        IndustrialDevelopTecSerOrg industrialDevelopTecSerOrg = industrialDevelopTecSerOrgMapper.selectByOrgcode(usernameUtil.getOrgCode());
+        BeanUtils.copyProperties(industrialDevelopTecSerOrg,industrialDevelopTecSerOrgDto);
+        FileDO fileDO = fileService.selectFileByDataCode(industrialDevelopTecSerOrg.getItemcode());
+        String filePath = !ObjectUtils.allNotNull(fileDO) ? "已经损坏了" : fileDO.getFilePath() ;
+        industrialDevelopTecSerOrgDto.setFilePath(filePath);
+        return industrialDevelopTecSerOrgDto;
+    }
+
+    @Override
     public int updateByPrimaryKeySelective(IndustrialDevelopTecSerOrg record) {
+        if (record.getAddressCity() != null){
+            OrganizationDO updated = new OrganizationDO();
+            updated.setOrgLocate(record.getAddressCity());
+            organizationDOMapper.updateByOrgCode(updated,usernameUtil.getOrgCode());
+        }
         return industrialDevelopTecSerOrgMapper.updateByPrimaryKeySelective(record);
     }
 
     @Override
     public int updateByPrimaryKey(IndustrialDevelopTecSerOrg record) {
+        if (record.getAddressCity() != null){
+            OrganizationDO updated = new OrganizationDO();
+            updated.setOrgLocate(record.getAddressCity());
+            organizationDOMapper.updateByOrgCode(updated,record.getOrgCode());
+        }
         return industrialDevelopTecSerOrgMapper.updateByPrimaryKey(record);
     }
 
     @Override
-    public List<IndustrialDevelopTecSerOrgDto> selectAll() {
-        List<IndustrialDevelopTecSerOrg> list = industrialDevelopTecSerOrgMapper.selectAll();
+    public List<IndustrialDevelopTecSerOrgDto> selectAll(String type) {
+        List<IndustrialDevelopTecSerOrg> list = industrialDevelopTecSerOrgMapper.selectAll(type);
         List<IndustrialDevelopTecSerOrgDto> resList = new ArrayList<>();
         for (IndustrialDevelopTecSerOrg item: list){
             IndustrialDevelopTecSerOrgDto newObj = new IndustrialDevelopTecSerOrgDto();
@@ -72,4 +127,9 @@ public class IndustrialDevelopTecSerOrgServiceImpl implements IndustrialDevelopT
         return resList;
     }
 
+    @Override
+    public IndustrialDevelopTecSerOrg selectByOrgNameAndCode(String orgName, String orgCode){
+        IndustrialDevelopTecSerOrg developTecSerOrg = industrialDevelopTecSerOrgMapper.selectByOrgNameAndCode(orgName, orgCode);
+        return developTecSerOrg;
+    }
 }

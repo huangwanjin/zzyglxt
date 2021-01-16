@@ -7,6 +7,7 @@ import com.zyyglxt.error.BusinessException;
 import com.zyyglxt.error.EmBusinessError;
 import com.zyyglxt.service.FamPreDOService;
 import com.zyyglxt.service.IFileService;
+import com.zyyglxt.util.UsernameUtil;
 import com.zyyglxt.validator.ValidatorImpl;
 import com.zyyglxt.validator.ValidatorResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +31,20 @@ public class FamPreDOServiceImpl implements FamPreDOService {
     private FamPreDOMapper famPreDOMapper;
     @Autowired
     private ValidatorImpl validator;
+    @Autowired
+    private UsernameUtil usernameUtil;
     @Transactional
     @Override
     /*历史名方添加数据*/
-    public int  insertSelective(FamPreDO record) throws BusinessException {
+    public int  insertSelective(FamPreDO record)  {
         ValidatorResult result = validator.validate(record);
         if(result.isHasErrors()){
             throw new BusinessException(result.getErrMsg(), EmBusinessError.PARAMETER_VALIDATION_ERROR);
         }
         record.setItemcode(UUID.randomUUID().toString());
         record.setItemcreateat(new Date());
+        record.setCreater(usernameUtil.getOperateUser());
+        record.setUpdater(usernameUtil.getOperateUser());
         return famPreDOMapper.insertSelective(record);
     }
     @Transactional
@@ -49,12 +54,12 @@ public class FamPreDOServiceImpl implements FamPreDOService {
     }
     @Transactional
     @Override
-    public int updateByPrimaryKeySelective(FamPreDO record) throws BusinessException {
+    public int updateByPrimaryKeySelective(FamPreDO record)  {
         ValidatorResult result = validator.validate(record);
         if(result.isHasErrors()){
             throw new BusinessException(result.getErrMsg(), EmBusinessError.PARAMETER_VALIDATION_ERROR);
         }
-        record.setItemupdateat(new Date());
+        record.setUpdater(usernameUtil.getOperateUser());
         return famPreDOMapper.updateByPrimaryKeySelective(record);
     }
 

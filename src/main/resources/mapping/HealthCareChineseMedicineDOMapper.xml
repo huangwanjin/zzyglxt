@@ -34,6 +34,7 @@
     from tb_health_care_chinese_medicine
     where itemID = #{itemid,jdbcType=INTEGER}
       and itemCode = #{itemcode,jdbcType=CHAR}
+    order by itemUpdateAt desc
   </select>
   <delete id="deleteByPrimaryKey" parameterType="com.zyyglxt.dataobject.HealthCareChineseMedicineDOKey">
 
@@ -237,13 +238,14 @@
         SELECT *
         FROM tb_health_care_chinese_medicine
         WHERE CHINESE_MEDICINE_STATUS = #{chineseMedicineStatus,jdbcType=VARCHAR}
+        order by itemUpdateAt desc
     </select>
 
   <update id="changeStatusToMedicine">
     update tb_health_care_chinese_medicine
     <set>
       <if test="status != null">
-        CHINESE_MEDICINE_STATUS = #{chineseMedicineStatus,jdbcType=VARCHAR}
+        CHINESE_MEDICINE_STATUS = #{status,jdbcType=VARCHAR}
       </if>
     </set>
     where itemID = #{key.itemid,jdbcType=INTEGER}

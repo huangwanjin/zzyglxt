@@ -39,7 +39,7 @@ public class HealthCareChineseMedicineDOController {
    */
    @RequestMapping(value ="inserthealthcarechinesemedicinedo",method = RequestMethod.POST )
    @LogAnnotation(appCode ="",logTitle ="中医药数据添加",logLevel ="3",creater ="huangwj",updater = "huangwj")
-   public ResponseData insertHealthCareChineseMedicineDOMapper(@RequestBody HealthCareChineseMedicineDO key) throws BusinessException {
+   public ResponseData insertHealthCareChineseMedicineDOMapper(@RequestBody HealthCareChineseMedicineDO key) {
 
            System.out.println("中医药名称: " + key.getChineseMedicineName());
            healthCareChineseMedicineDOService.insert(key);
@@ -69,7 +69,7 @@ public class HealthCareChineseMedicineDOController {
    */
     @RequestMapping(value ="updatehealthcarechinesemedicinedo",method = RequestMethod.POST )
     @LogAnnotation(appCode ="",logTitle ="中医药数据修改",logLevel ="2",creater ="huangwj",updater = "huangwj")
-    public ResponseData updateHealthCareChineseMedicineDOMapper(@RequestBody HealthCareChineseMedicineDO key) throws BusinessException {
+    public ResponseData updateHealthCareChineseMedicineDOMapper(@RequestBody HealthCareChineseMedicineDO key)  {
             healthCareChineseMedicineDOService.updateByPrimaryKeySelective(key);
             System.out.println("要修改中医药编号为："+key.getItemid());
             return new ResponseData(EmBusinessError.success);
@@ -89,7 +89,7 @@ public class HealthCareChineseMedicineDOController {
     /*public List<HealthCareChineseMedicineDO> selectAllHealthCareChineseMedicineDOMapper(){
         return healthCareChineseMedicineDOService.selectAllHealthCareChineseMedicine();
     }*/
-    public ResponseData selectAllHealthCareChineseMedicineDOMapper(@RequestParam("chineseMedicineStatus")List chineseMedicineStatus){
+    public ResponseData selectAllHealthCareChineseMedicineDOMapper(@RequestParam(value="chineseMedicineStatus")List chineseMedicineStatus){
         List<HealthCareChineseMedicineDO> healthCareChineseMedicineDOSList = healthCareChineseMedicineDOService.selectAllHealthCareChineseMedicine(chineseMedicineStatus);
         List<HealthCareChineseMedicineDto> healthCareChineseMedicineDtoList = new ArrayList<>();
         for (HealthCareChineseMedicineDO healthCareChineseMedicineDO : healthCareChineseMedicineDOSList) {
@@ -104,7 +104,7 @@ public class HealthCareChineseMedicineDOController {
      @RequestMapping(value = "changestatustomedicine/{itemID}/{itemCode}" , method = RequestMethod.POST)
      @ResponseBody
      @LogAnnotation(logTitle = "中医药数据状态的修改", logLevel = "2")
-    public ResponseData changeStatusToMedicine(@RequestParam("chineseMedicineStatus") String chineseMedicineStatus,@PathVariable("itemID") Integer itemID,@PathVariable("itemCode")String itemCode){
+    public ResponseData changeStatusToMedicine(@RequestParam("chineseMedicineStatus") String chineseMedicineStatus, @PathVariable("itemID") Integer itemID , @PathVariable("itemCode")String itemCode){
          HealthCareChineseMedicineDOKey healthCareChineseMedicineDOKey=new HealthCareChineseMedicineDOKey();
          healthCareChineseMedicineDOKey.setItemid(itemID);
          healthCareChineseMedicineDOKey.setItemcode(itemCode);
