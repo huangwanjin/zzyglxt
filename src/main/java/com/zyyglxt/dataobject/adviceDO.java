@@ -1,7 +1,10 @@
 package com.zyyglxt.dataobject;
 
+import lombok.Data;
+
 import java.util.Date;
 
+@Data
 public class adviceDO extends adviceDOKey {
     private String dataCode;
 
@@ -21,17 +24,41 @@ public class adviceDO extends adviceDOKey {
 
     private Date officeDate;
 
-    private String deputyDirector;
+    private String deputyDirector; //中医处分管局长审核意见
 
-    private String deputyDirectorName;
+    private String deputyDirectorName; //中医处分管局长姓名
 
-    private Date deputyDirectorDate;
+    private Date deputyDirectorDate; //中医处分管局长审核时间
+
+    private String deputyDirector1; //中药处分管局长审核意见
+
+    private String deputyDirectorName1; //中药处分管局长姓名
+
+    private Date deputyDirectorDate1; //中药处分管局长审核时间
+
+    private String deputyDirector2; //综合处分管局长审核意见
+
+    private String deputyDirectorName2;  //综合处分管局长姓名
+
+    private Date deputyDirectorDate2; //综合处分管局长审核时间
+
+    private String deputyDirector3; //法规监督处分管局长审核意见
+
+    private String deputyDirectorName3; //法规监督处分管局长姓名
+
+    private Date deputyDirectorDate3; //法规监督处分管局长审核时间
 
     private String director;
 
     private String directorName;
 
     private Date directorDate;
+
+    private String signOpinion;
+
+    private String signDate;
+
+    private String signName;
 
     private String creater;
 
@@ -159,37 +186,5 @@ public class adviceDO extends adviceDOKey {
 
     public void setItemupdateat(Date itemupdateat) {
         this.itemupdateat = itemupdateat;
-    }
-
-    public String getDepartmentName() {
-        return departmentName;
-    }
-
-    public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName == null ? null : departmentName.trim();
-    }
-
-    public String getOfficeName() {
-        return officeName;
-    }
-
-    public void setOfficeName(String officeName) {
-        this.officeName = officeName == null ? null : officeName.trim();
-    }
-
-    public String getDeputyDirectorName() {
-        return deputyDirectorName;
-    }
-
-    public void setDeputyDirectorName(String deputyDirectorName) {
-        this.deputyDirectorName = deputyDirectorName == null ? null : deputyDirectorName.trim();
-    }
-
-    public String getDirectorName() {
-        return directorName;
-    }
-
-    public void setDirectorName(String directorName) {
-        this.directorName = directorName == null ? null : directorName.trim();
     }
 }

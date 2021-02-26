@@ -113,9 +113,19 @@
             "governerscounter":"postPublicWay",
             "postPublicWay":"postPublicWay",
             //会签审核状态
-            "signstatus":"status",
+            "signstatus":"signstatus",
             //发文审核状态
-            "postStatus":"postStatus"
+            "postStatus":"postStatus",
+            //审核状态-机构审核
+            "orgAuditStatus": "orgAuditStatus",
+            //时间状态
+            "timeStatus":"timeStatus",
+            //收文审核状态
+            "receiptStatus":"receiptStatus",
+            //专科级别
+            "specialtyLevel":"specialtyLevel",
+            //会签部门
+            "parment":"signDepartment"
         }
 
         var dictList = {

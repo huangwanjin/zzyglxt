@@ -1,19 +1,31 @@
 (function () {
-    require(['jquery','objectUtil','ajaxUtil','alertUtil','stringUtil','fileUtil','distpicker','datetimepicker','dictUtil'],
-        function (jquery,objectUtil,ajaxUtil,alertUtil,stringUtil,fileUtil,distpicker,datetimepicker,dictUtil) {
-
-            const editor = objectUtil.wangEditorUtil();
+    require(['jquery','objectUtil','ajaxUtil','alertUtil','stringUtil','fileUtil','distpicker','datetimepicker','dictUtil','selectUtil'],
+        function (jquery,objectUtil,ajaxUtil,alertUtil,stringUtil,fileUtil,distpicker,datetimepicker,dictUtil,selectUtil) {
 
             var type = isUpdate() ? "put": "post";
 
-            var pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.governerscounter);
-            $("#govPunlic").selectUtil(pl);
+            var pl = dictUtil.getDictByCode(dictUtil.DICT_LIST.parment);
+            $("#parment").selectUtil(pl);
 
             $("#cancel").unbind().on('click',function () {
                 var url = "/document/sign";
                 orange.redirect(url);
             });
 
+            //不公开理由
+            var reason = dictUtil.getDictByCode(dictUtil.DICT_LIST.postReason);
+            $("#reason").selectUtil(reason);
+
+            //公开方式
+            $('input[type=radio][name=govPunlic]').change(function () {
+                if(this.value == "2"){
+                    $('#reason').attr('style',"display:block");
+                }else {
+                    $('#reason').attr('style',"display:none");
+                    $("#reason").selectUtil(reason);
+                    $("#reason").val() == "";
+                }
+            })
 
             $("#btn_save").unbind().on('click',function () {
                 var ReceiptEntity;
@@ -24,10 +36,10 @@
                     operateMessage = "保存会签信息成功";
                     ReceiptEntity = {
                         itemcode: stringUtil.getUUID(),
-                        govPunlic : $("#govPunlic").val(),
+                        govPunlic : $('input:radio[name="govPunlic"]:checked').val(),
                         receivingTitle : $("#receivingTitle").val(),
                         parment : $("#parment").val(),
-                        fileNo : $("#fileNo").val(),
+                        fileNumber : $("#fileNumber").val(),
                         number : $("#number").val(),
                         classification : $("#classification").val(),
                         reason : $("#reason").val(),
@@ -39,10 +51,10 @@
                     ReceiptEntity = {
                         itemid: needData.itemid,
                         itemcode: needData.itemcode,
-                        govPunlic : $("#govPunlic").val(),
+                        govPunlic : $('input:radio[name="govPunlic"]:checked').val(),
                         receivingTitle : $("#receivingTitle").val(),
                         parment : $("#parment").val(),
-                        fileNo : $("#fileNo").val(),
+                        fileNumber : $("#fileNumber").val(),
                         number : $("#number").val(),
                         classification : $("#classification").val(),
                         reason : $("#reason").val(),
@@ -60,6 +72,7 @@
                         alertUtil.alert(data.msg);
                     }
                 },false,true,type);
+                return false;
             });
 
             $("#btn_insert").unbind().on('click',function () {
@@ -71,10 +84,10 @@
                     operateMessage = "录入会签信息成功";
                     ReceiptEntity = {
                         itemcode: stringUtil.getUUID(),
-                        govPunlic : $("#govPunlic").val(),
+                        govPunlic : $('input:radio[name="govPunlic"]:checked').val(),
                         receivingTitle : $("#receivingTitle").val(),
                         parment : $("#parment").val(),
-                        fileNo : $("#fileNo").val(),
+                        fileNumber : $("#fileNumber").val(),
                         number : $("#number").val(),
                         classification : $("#classification").val(),
                         reason : $("#reason").val(),
@@ -86,10 +99,10 @@
                     ReceiptEntity = {
                         itemid: needData.itemid,
                         itemcode: needData.itemcode,
-                        govPunlic : $("#govPunlic").val(),
+                        govPunlic : $('input:radio[name="govPunlic"]:checked').val(),
                         receivingTitle : $("#receivingTitle").val(),
                         parment : $("#parment").val(),
-                        fileNo : $("#fileNo").val(),
+                        fileNumber : $("#fileNumber").val(),
                         number : $("#number").val(),
                         classification : $("#classification").val(),
                         reason : $("#reason").val(),
@@ -106,7 +119,8 @@
                     }else {
                         alertUtil.alert(data.msg);
                     }
-                },false,true);
+                },false,true,);
+                return false;
             });
 
             (function init() {
@@ -115,7 +129,7 @@
                     $("#govPunlic").val(tempdata.govPunlic);
                     $("#receivingTitle").val(tempdata.receivingTitle);
                     $("#parment").val(tempdata.parment);
-                    $("#fileNo").val(tempdata.fileNo);
+                    $("#fileNumber").val(tempdata.fileNumber);
                     $("#number").val(tempdata.number);
                     $("#classification").val(tempdata.classification);
                     $("#reason").val(tempdata.reason);

@@ -2,8 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zyyglxt.dao.GovernresCountersignMapper">
   <resultMap id="BaseResultMap" type="com.zyyglxt.dataobject.GovernresCountersign">
-    <!--@mbg.generated-->
-    <!--@Table tb_governres_countersign-->
     <id column="itemID" jdbcType="INTEGER" property="itemid" />
     <id column="itemCode" jdbcType="CHAR" property="itemcode" />
     <result column="RECEIVING_TITLE" jdbcType="VARCHAR" property="receivingTitle" />
@@ -11,6 +9,7 @@
     <result column="GOV_PUNLIC" jdbcType="VARCHAR" property="govPunlic" />
     <result column="REASON" jdbcType="VARCHAR" property="reason" />
     <result column="FILE_NO" jdbcType="VARCHAR" property="fileNo" />
+    <result column="FILE_NUMBER" jdbcType="VARCHAR" property="fileNumber" />
     <result column="PARMENT" jdbcType="VARCHAR" property="parment" />
     <result column="CLASSIFICATION" jdbcType="VARCHAR" property="classification" />
     <result column="STATUS" jdbcType="VARCHAR" property="status" />
@@ -19,26 +18,38 @@
     <result column="UPDATER" jdbcType="VARCHAR" property="updater" />
     <result column="itemUpdateAt" jdbcType="TIMESTAMP" property="itemupdateat" />
   </resultMap>
+  <resultMap id="ResultMapWithFile" extends="BaseResultMap" type="com.zyyglxt.dto.CountersignDto">
+    <collection property="filePath" ofType="java.lang.String">
+      <constructor>
+        <arg column="FILE_PATH"/>
+      </constructor>
+    </collection>
+    <collection property="fileName" ofType="java.lang.String">
+      <constructor>
+        <arg column="FILE_NAME"/>
+      </constructor>
+    </collection>
+  </resultMap>
   <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    itemID, itemCode, RECEIVING_TITLE, `NUMBER`, GOV_PUNLIC, REASON, FILE_NO, PARMENT,CLASSIFICATION,
+    itemID, itemCode, RECEIVING_TITLE, `NUMBER`, GOV_PUNLIC, REASON, FILE_NO, FILE_NUMBER,PARMENT,CLASSIFICATION,
     `STATUS`, CREATER, itemCreateAt, UPDATER, itemUpdateAt
   </sql>
+  <sql id="File_Column_List">
+    gc.itemID, gc.itemCode, gc.RECEIVING_TITLE, gc.NUMBER, gc.GOV_PUNLIC, gc.REASON, gc.FILE_NO, gc.FILE_NUMBER,gc.PARMENT,gc.CLASSIFICATION,
+    gc.STATUS, gc.CREATER, gc.itemCreateAt, gc.UPDATER, gc.itemUpdateAt
+  </sql>
   <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
-    <!--@mbg.generated-->
     select 
     <include refid="Base_Column_List" />
     from tb_governres_countersign
     where itemCode = #{itemcode,jdbcType=CHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="map">
-    <!--@mbg.generated-->
     delete from tb_governres_countersign
     where itemCode = #{itemcode,jdbcType=CHAR}
   </delete>
 
   <insert id="insertSelective" keyColumn="itemID" keyProperty="itemid" parameterType="com.zyyglxt.dataobject.GovernresCountersign" useGeneratedKeys="true">
-    <!--@mbg.generated-->
     insert into tb_governres_countersign
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="itemcode != null">
@@ -58,6 +69,9 @@
       </if>
       <if test="fileNo != null">
         FILE_NO,
+      </if>
+      <if test="fileNumber != null">
+        FILE_NUMBER,
       </if>
       <if test="parment != null">
         PARMENT,
@@ -100,6 +114,9 @@
       <if test="fileNo != null">
         #{fileNo,jdbcType=VARCHAR},
       </if>
+      <if test="fileNumber != null">
+        #{fileNumber,jdbcType=VARCHAR},
+      </if>
       <if test="parment != null">
         #{parment,jdbcType=VARCHAR},
       </if>
@@ -124,7 +141,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.zyyglxt.dataobject.GovernresCountersign">
-    <!--@mbg.generated-->
+    
     update tb_governres_countersign
     <set>
       <if test="receivingTitle != null">
@@ -141,6 +158,9 @@
       </if>
       <if test="fileNo != null">
         FILE_NO = #{fileNo,jdbcType=VARCHAR},
+      </if>
+      <if test="fileNumber != null">
+        FILE_NUMBER = #{fileNumber,jdbcType=VARCHAR},
       </if>
       <if test="parment != null">
         PARMENT = #{parment,jdbcType=VARCHAR},
@@ -169,7 +189,28 @@
   </update>
 
   <select id="selectAll" resultMap="BaseResultMap">
-  SELECT *
-  FROM tb_governres_countersign
+    select
+    <include refid="File_Column_List" />
+    ,
+    cf.FILE_PATH,
+    cf.FILE_NAME
+    from tb_governres_countersign gc left join tb_culpro_file cf
+    on gc.itemCode = cf.DATA_CODE
+    <if test="status == 1">
+      where STATUS between 0 and 9
+    </if>
+    <if test="status == 2">
+      where STATUS in (1,2,4)
+    </if>
+    <if test="status == 3">
+      where STATUS between 10 and 12
+    </if>
+    <if test="status == 4">
+      where STATUS in (3,5,13)
+    </if>
+    <if test="status == 4">
+      where STATUS between 6 and 9
+    </if>
+    order by gc.itemUpdateAt desc
 </select>
 </mapper>

@@ -42,7 +42,7 @@
                 }
             }, false, "", "get");
 
-            $("#userName").text(sessionStorage.getItem('username'));
+            $("#userName").text(sessionStorage.getItem('name'));
 
             $("#logout").on("click", function () {
                 ajaxUtil.myAjax(null, "/logout", null, function (data) {
@@ -196,7 +196,7 @@
                         }, false, true)
                     }
                 }
-
+                return false;
             });
         });
 })();

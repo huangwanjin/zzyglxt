@@ -3,6 +3,8 @@ package com.zyyglxt.dao;
 import com.zyyglxt.dataobject.IndustrialDevelopExpertRefDO;
 import com.zyyglxt.dataobject.IndustrialDevelopExpertRefDOKey;
 import com.zyyglxt.dto.ExmaineDto;
+import com.zyyglxt.dto.industrialDevelop.IndustrialDevelopTopicDODto;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -16,9 +18,11 @@ public interface IndustrialDevelopExpertRefDOMapper {
 
     IndustrialDevelopExpertRefDO selectByPrimaryKey(IndustrialDevelopExpertRefDOKey key);
 
-    List<ExmaineDto> selectAll();
+    //查询
+    List<String> selectAllTopicCode();
 
     List<ExmaineDto> selectByExpertCode(String expertCode);
+    List<ExmaineDto> selectAllByTopicCode(String topicCode);
 
     int updateByPrimaryKeySelective(IndustrialDevelopExpertRefDO record);
 
@@ -27,4 +31,10 @@ public interface IndustrialDevelopExpertRefDOMapper {
     List<IndustrialDevelopExpertRefDO> selectByTopicCode(String topicCode);
 
     int deleteByTopicCode(String topicCode);
+
+    List<IndustrialDevelopTopicDODto> topicAndExpertStatus();
+
+    Integer selectZjktsl(String topicCode);
+
+    int delExpertTopic(@Param("expertCode")String expertCode, @Param("topicCode")String topicCode);
 }

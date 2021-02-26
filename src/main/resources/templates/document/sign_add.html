@@ -75,39 +75,43 @@
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">会签部门：</label>
                     <div class="col-sm-3">
-                        <input id="parment" type="text" class="form-control" placeholder="请输入" maxlength="30">
+                        <select  class="form-control" id="parment" ></select>
+                    </div>
+
+                    <label class="col-sm-2 col-form-label">文件编号：</label>
+                    <div class="col-sm-3">
+                        <input id="fileNumber" type="text" class="form-control" placeholder="请输入" maxlength="30">
+                    </div>
+            </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">密级：</label>
+                    <div class="col-sm-3">
+                        <input id="classification" type="text" class="form-control" placeholder="请输入" maxlength="30">
                     </div>
 
                     <label class="col-sm-2 col-form-label">需要份数：</label>
                     <div class="col-sm-3">
                         <input id="number" type="text" class="form-control" placeholder="请输入" maxlength="30">
                     </div>
-            </div>
-
+                </div>
 
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">政府信息公开：</label>
-                    <div class="col-sm-3">
-                        <select  class="form-control" id="govPunlic" ></select>
+                    <div class="col-sm-4">
+                        <input name="govPunlic" type="radio" id="pw1" value="0" style="zoom:130%;"/>
+                        <label for="pw1">主动公开</label>
+                        <input name="govPunlic" type="radio" id="pw2" value="1" style="zoom:130%; margin-left: 77px;"/>
+                        <label for="pw2">依申请公开</label>
+                        <input name="govPunlic" type="radio" id="pw3" value="2" style="zoom:130%; margin-left: 77px;"/>
+                        <label for="pw3">不公开</label>
                     </div>
-
-                    <label class="col-sm-2 col-form-label">不公开理由：</label>
-                    <div class="col-sm-3">
-                        <input id="reason" type="text" class="form-control" placeholder="请输入" maxlength="30">
+                    <div class="col-sm-4">
+                        <select id="reason" class="form-control" style="height: 40px; display: none"></select>
                     </div>
             </div>
 
-                <div class="form-group row">
-                    <label class="col-sm-2 col-form-label">文件编号：</label>
-                    <div class="col-sm-3">
-                        <input id="fileNo" type="text" class="form-control" placeholder="请输入" maxlength="30">
-                    </div>
 
-                    <label class="col-sm-2 col-form-label">密级：</label>
-                    <div class="col-sm-3">
-                        <input id="classification" type="text" class="form-control" placeholder="请输入" maxlength="30">
-                    </div>
-                </div>
 
                 <!--附件div-->
                 <div class="form-group row">
@@ -122,19 +126,19 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <div class="col-lg-4 col-md-4" ></div>
-                    <div class=" col-lg-4 row" >
+                    <div class="col-lg-6 col-md-6" ></div>
+                    <div class=" col-lg-4 row" style="padding: 0" >
                         <div class="col">
                             <button id="cancel" type="button" class="btn btn-light col">取消</button>
                         </div>
                         <div class="col">
                             <button id="btn_save" type="submit" class="btn btn-danger col">保存</button>
                         </div>
-                        <div class="col">
+                        <div class="col" style="padding-right: 0;">
                             <button id="btn_insert" type="submit" class="btn btn-primary col">发送</button>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-4" ></div>
+
                 </div>
             </form>
 
@@ -144,8 +148,6 @@
 </div>
 
 <script type="text/javascript" data-main="/main/main.js" th:src="@{/component/require@2.3.6/require-2.3.6.js}"></script>
-<script type="text/javascript" th:src="@{/project/js/document/sign.js}"></script>
 <link type="text/css" rel="stylesheet" href="/component/uploadImg/css/uploadImg.css" th:src="@{/component/uploadImg/css/uploadImg.css}">
-<script type="text/javascript" th:src="@{/component/uploadImg/js/bootstrap.min.js}"></script>
 </body>
 </html>

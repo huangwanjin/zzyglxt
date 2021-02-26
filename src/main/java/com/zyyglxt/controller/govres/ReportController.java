@@ -33,7 +33,6 @@ public class ReportController {
     @RequestMapping(value ="insertrequestreport",method = RequestMethod.POST )
     @LogAnnotation(appCode ="",logTitle ="请示报告数据的添加",logLevel ="3")
     public ResponseData insertRequestReport(@RequestBody RequestReportDO key)  {
-        System.out.println("请示报告标题名称: " + key.getReportTitle());
         iRequestReportDOService.insertSelective(key);
         return new ResponseData(EmBusinessError.success);
     }
@@ -57,22 +56,13 @@ public class ReportController {
     @LogAnnotation(appCode ="",logTitle ="请示报告数据的修改",logLevel ="2")
     public ResponseData updateRequestReport(@RequestBody RequestReportDO key)  {
         iRequestReportDOService.updateByPrimaryKeySelective(key);
-        System.out.println("要修改请示报告标题名称编号为："+key.getItemid());
         return new ResponseData(EmBusinessError.success);
     }
     /*查询所有请示报告数据*/
     @RequestMapping(value ="selectallrequestreport",method = RequestMethod.GET )
     @LogAnnotation(appCode ="",logTitle ="查询所有请示报告数据",logLevel ="1")
-    public ResponseData selectAllRequestReport(@RequestParam(value = "reportDataStatus") List reportDataStatus){
-        List<RequestReportDO> requestReportDOList = iRequestReportDOService.selectAllReport(reportDataStatus);
-        List<RequestReportDto> requestReportDtoList = new ArrayList<>();
-        for (RequestReportDO requestReportDO : requestReportDOList) {
-            FileDO fileDO = iFileService.selectFileByDataCode(requestReportDO.getItemcode());
-            requestReportDtoList.add(
-                    ConvertDOToCareFamPre.convertFromRequestReport(
-                            requestReportDO,fileDO.getFilePath(),fileDO.getFileName()));
-        }
-        return new ResponseData(EmBusinessError.success,requestReportDtoList);
+    public ResponseData selectAllRequestReport(@RequestParam(value = "reportDataStatus") String  reportDataStatus){
+        return new ResponseData(EmBusinessError.success,iRequestReportDOService.selectAllReport(reportDataStatus));
     }
 
     /*请示报告数据状态*/
